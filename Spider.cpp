@@ -1,10 +1,10 @@
-//Connor Kunstek
+  //Connor Kunstek
 //CS315
 //4-6-2017
 //Lab - Practicum 4
 //spider class
 
-#include "City.h"
+#include "Spider.h"
 #include<vector>
 using namespace std;
 
@@ -12,8 +12,8 @@ Spider::Spider()
 {
     row = 1;
     column = 1;
-    location.push_back(row);
-    location.push_back(column);
+    startLocation.push_back(row);
+    startLocation.push_back(column);
 }
 
 Spider::Spider(int row, int column)
@@ -24,32 +24,33 @@ Spider::Spider(int row, int column)
     currentLocation.push_back(column);
 }
 
-Spider::startSpider(vector<int> temp)
+void Spider::startSpider(vector<string> temp)
 {
     startLocation.clear();
-    startLocation = temp;
+    startLocation.push_back(stoi(temp[0]));
+    startLocation.push_back(stoi(temp[1]));
 }
 
-Spider::newLocation(int row, int column)
+void Spider::newLocation(int tempRow, int tempColumn)
 {
     currentLocation.clear();
     currentLocation.push_back(row);
     currentLocation.push_back(column);
 }
 
-Spider::getRow()
+int Spider::getRow()
 {
     return currentLocation[0];
 }
 
-Spider::getColumn()
+int Spider::getCol()
 {
     return currentLocation[1];
 }
 
-Spider::checkSurround()
+void Spider::checkSurround()
 {
     int row = getRow();
-    int col = getColumn();
+    int col = getCol();
 
 }

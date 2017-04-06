@@ -10,24 +10,29 @@
 //includes//////////////////////////////////////////////////////////////////////
 #include <string>
 #include <iostream>
+#include <vector>
 using namespace std;
 class Spider
 {
     public:
         //constructors//////////////////////////////////////////////////////////
         Spider();
-        Spider(row, column);
+        Spider(int row, int column);
         //to access private data////////////////////////////////////////////////
-        vector<int> newLocation();
+        void newLocation(int tempRow, int tempCol);
         vector<int> getstartLocation();
         vector<int> getcurrentLocation();
-        double getRow();
-        double getCol();
+        void startSpider(vector<string> temp);
+        void checkSurround();
+        int getRow();
+        int getCol();
 
 
     private:
         vector<int> startLocation;
         vector<int> currentLocation;
+        int row;
+        int column;
 };
 //closing include guard/////////////////////////////////////////////////////////
 #endif
