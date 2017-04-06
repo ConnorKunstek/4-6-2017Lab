@@ -11,10 +11,11 @@
 #include <math.h>
 #include <sstream>
 #include <chrono>
+#include "Spider.h"
 
 using namespace std;
 
-int *TOTOALROW;
+int *TOTALROW;
 int *TOTALCOL;
 
 //Split/////////////////////////////////////////////////////////////////////////
@@ -45,28 +46,35 @@ vector<string> split( string line, string delimiters ) {
     is_delim = found_del;
     curr_loc++;
   }
-
-  int dfs(int r, int c)
+  // Check if the last word ended at the end of the string, start_loc -> end
+  if(!is_delim)
   {
-      //out of bounds? not a good cell? visited?
-      if (r == TOTALROW || r < 0 || c == TOTALCOL ||
-          c < 0 || matrix[r][c] == 'L' || visited[r][c])
-      {
-          return 0;
-      }
-      int count = 1;
-      // number of water cells (including this one) that are connected
-      visited[r][c] = true; //dfs called for 8 neighbors of the current cell
-      count += dfs (r, c + 1);
-      count += dfs (r, c - 1  );
-      count += dfs (r + 1 , c  );
-      count += dfs (r + 1 , c + 1 );
-      count += dfs (r + 1 , c - 1 );
-      count += dfs (r - 1 , c );
-      count += dfs (r - 1 , c + 1 );
-      count += dfs (r - 1 , c - 1 );
-      return count;
+    result.push_back(line.substr(start_loc, curr_loc-start_loc));
   }
+  return result;
+}
+
+// int dfs(int r, int c)
+// {
+//     //out of bounds? not a good cell? visited?
+//     if (r == *TOTALROW || r < 0 || c == *TOTALCOL ||
+//         c < 0 || matrix[r][c] == 'L' || visited[r][c])
+//     {
+//         return 0;
+//     }
+//     int count = 1;
+//     // number of water cells (including this one) that are connected
+//     visited[r][c] = true; //dfs called for 8 neighbors of the current cell
+//     count += dfs (r, c + 1);
+//     count += dfs (r, c - 1  );
+//     count += dfs (r + 1 , c  );
+//     count += dfs (r + 1 , c + 1 );
+//     count += dfs (r + 1 , c - 1 );
+//     count += dfs (r - 1 , c );
+//     count += dfs (r - 1 , c + 1 );
+//     count += dfs (r - 1 , c - 1 );
+//     return count;
+// }
 
 
 int main()
@@ -74,10 +82,10 @@ int main()
     chrono::time_point<chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
 
-    Spider spider = new Spider();
-
+    Spider spider = Spider();
+    int count = 0;
     string line;
-    vector<vector> column;
+    vector<vector<char>> column;
     bool check = false;
 
     while(getline(cin, line))
@@ -85,22 +93,22 @@ int main()
         count++;
         for(int i = 0; i < line.length(); i++)
         {
-            if(line[i] == " ")
+            if(line[i] == ' ')
             {
                 return true;
             }
         }
         if(check)
         {
-            TOTALROW = line.length();
-            TOTALCOL = count;
-            vector<int> temp = split(line, " , \t");
+            *TOTALROW = line.length();
+            *TOTALCOL = count;
+            vector<string> temp = split(line, " , \t");
             spider.startSpider(temp);
             for(int i = 1; i < 8; i++)
             {
                 int row = spider.getRow();
-                int col = spider.getColumn();
-                if
+                int col = spider.getCol();
+
                 spider.checkSurround();
             }
 
