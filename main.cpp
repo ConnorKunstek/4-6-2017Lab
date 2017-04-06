@@ -15,8 +15,10 @@
 
 using namespace std;
 
-int *TOTALROW;
-int *TOTALCOL;
+vector<vector<char>> sugar;
+vector<vector<char>> visited;
+vector<vector<char>> grid;
+vector<vector<int>> fly;
 
 //Split/////////////////////////////////////////////////////////////////////////
 vector<string> split( string line, string delimiters ) {
@@ -54,27 +56,53 @@ vector<string> split( string line, string delimiters ) {
   return result;
 }
 
-// int dfs(int r, int c)
-// {
-//     //out of bounds? not a good cell? visited?
-//     if (r == *TOTALROW || r < 0 || c == *TOTALCOL ||
-//         c < 0 || matrix[r][c] == 'L' || visited[r][c])
-//     {
-//         return 0;
-//     }
-//     int count = 1;
-//     // number of water cells (including this one) that are connected
-//     visited[r][c] = true; //dfs called for 8 neighbors of the current cell
-//     count += dfs (r, c + 1);
-//     count += dfs (r, c - 1  );
-//     count += dfs (r + 1 , c  );
-//     count += dfs (r + 1 , c + 1 );
-//     count += dfs (r + 1 , c - 1 );
-//     count += dfs (r - 1 , c );
-//     count += dfs (r - 1 , c + 1 );
-//     count += dfs (r - 1 , c - 1 );
-//     return count;
-// }
+vector<int> dfs(int r, int c, int rows, int columns)
+{
+    //out of bounds? not a good cell? visited?
+    cout << "in new dfs " << endl;
+    cout << "r: "<<r<<" c: "<<c<<" rows: "<< rows<<" columns: "<< columns<<endl;
+    vector<int> returnVec;
+    cout << "after returnVec creation " << endl;
+    if (r > rows || r < 1 || c > columns || c < 1 || grid[r][c] == 'S' || visited[r][c] == 'V')
+    {
+        cout << "in base case" << endl;
+        returnVec.push_back(r);
+        returnVec.push_back(c);
+        returnVec.push_back(0);
+        cout<<"before base case return"<<endl;
+        return returnVec;
+    }
+    cout << "after base case " << endl;
+    if(grid[r][c] == 'F')
+    {
+        cout << "found a fly" << endl;
+        returnVec.push_back(r);
+        returnVec.push_back(c);
+        returnVec.push_back(1);
+        return returnVec;
+    }
+    else
+    {
+        cout << "in else case" << endl;
+        returnVec.push_back(r);
+        returnVec.push_back(c);
+        returnVec.push_back(0);
+        visited[r][c] = 'V';
+    }
+    //int count = 1;
+    // number of water cells (including this one) that are connected
+    //visited[r][c] = 'V'; //dfs called for 8 neighbors of the current cell
+    cout << "recursive calls" << endl;
+    fly.push_back(dfs(r, c + 1, rows, columns));
+    fly.push_back(dfs(r, c - 1, rows, columns));
+    fly.push_back(dfs(r + 1 , c, rows, columns));
+    fly.push_back(dfs(r + 1 , c + 1, rows, columns));
+    fly.push_back(dfs(r + 1 , c - 1, rows, columns));
+    fly.push_back(dfs(r - 1 , c, rows, columns));
+    fly.push_back(dfs(r - 1 , c + 1, rows, columns));
+    fly.push_back(dfs(r - 1 , c - 1, rows, columns));
+    return returnVec;
+}
 
 
 int main()
@@ -83,43 +111,66 @@ int main()
     start = std::chrono::system_clock::now();
 
     Spider spider = Spider();
-    int count = 0;
     string line;
-    vector<vector<char>> column;
     bool check = false;
+    int rows = 0;
+    int columns = 0;
+    string answer = "Did not work";
 
     while(getline(cin, line))
     {
-        count++;
+        cout << line << endl;
         for(int i = 0; i < line.length(); i++)
         {
             if(line[i] == ' ')
             {
-                return true;
+                check = true;
             }
         }
         if(check)
         {
-            *TOTALROW = line.length();
-            *TOTALCOL = count;
-            vector<string> temp = split(line, " , \t");
-            spider.startSpider(temp);
-            for(int i = 1; i < 8; i++)
+            for(int i = 0; i<grid.size(); i++)
             {
-                int row = spider.getRow();
-                int col = spider.getCol();
-
-                spider.checkSurround();
+                vector<char> temp;
+                for(int j = 0; j < columns; j++)
+                {
+                    cout<<grid[i][j];
+                    temp.push_back('N');
+                }
+                cout <<endl;
+                visited.push_back(temp);
             }
-
-
+            vector<string> temp = split(line, " , \t");
+            vector<int>output;
+            cout << "r: "<<stoi(temp[0])<<" c: "<<stoi(temp[1])<<" rows: "<< rows<<" columns: "<< columns<<endl;
+            output = dfs(stoi(temp[0]), stoi(temp[1]), rows, columns);
+            cout << "right after dfs"<<endl;
+            for(int i = 0; i < fly.size(); i++)
+            {
+                if(fly[i][2] == 1)
+                {
+                    answer = "Yes";
+                }
+                else
+                {
+                    answer = "No";
+                }
+            }
+            cout<<answer<<endl;
         }
         else
         {
             vector<char> temp(line.begin(), line.end());
-            column.push_back(temp);
+            grid.push_back(temp);
+            rows++;
+            columns = line.length();
         }
     }
+
+    end = std::chrono::system_clock::now();
+    chrono::duration<double> elapsed_seconds = end-start;
+    time_t end_time = std::chrono::system_clock::to_time_t(end);
+    cout << "Time: " << elapsed_seconds.count() << " seconds" << endl << endl;
 
     return 0;
 }
