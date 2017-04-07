@@ -79,6 +79,7 @@ vector<int> dfs(int r, int c, int rows, int columns)
         returnVec.push_back(r);
         returnVec.push_back(c);
         returnVec.push_back(1);
+        visited[r][c] = 'V';
         return returnVec;
     }
     else
@@ -134,10 +135,8 @@ int main()
                 vector<char> temp;
                 for(int j = 0; j < columns; j++)
                 {
-                    cout<<grid[i][j];
                     temp.push_back('N');
                 }
-                cout <<endl;
                 visited.push_back(temp);
             }
             vector<string> temp = split(line, " , \t");
