@@ -3,19 +3,19 @@
 //Lab - Practicum 4
 //main file
 
-#include <map>
-#include <string>
+//Includes//////////////////////////////////////////////////////////////////////
+#include "string.h"
 #include <vector>
 #include <iostream>
-#include <cmath>
-#include <math.h>
 #include <sstream>
+#include <cstring>
 #include <chrono>
+#include <stdlib.h>
+#include <stdio.h>
 
 using namespace std;
-
-int *TOTOALROW;
-int *TOTALCOL;
+//to keep track of locations visited
+int visited[100][100];
 
 //Split/////////////////////////////////////////////////////////////////////////
 vector<string> split( string line, string delimiters ) {
@@ -45,73 +45,125 @@ vector<string> split( string line, string delimiters ) {
     is_delim = found_del;
     curr_loc++;
   }
-
-  int dfs(int r, int c)
+  // Check if the last word ended at the end of the string, start_loc -> end
+  if(!is_delim)
   {
-      //out of bounds? not a good cell? visited?
-      if (r == TOTALROW || r < 0 || c == TOTALCOL ||
-          c < 0 || matrix[r][c] == 'L' || visited[r][c])
-      {
-          return 0;
-      }
-      int count = 1;
-      // number of water cells (including this one) that are connected
-      visited[r][c] = true; //dfs called for 8 neighbors of the current cell
-      count += dfs (r, c + 1);
-      count += dfs (r, c - 1  );
-      count += dfs (r + 1 , c  );
-      count += dfs (r + 1 , c + 1 );
-      count += dfs (r + 1 , c - 1 );
-      count += dfs (r - 1 , c );
-      count += dfs (r - 1 , c + 1 );
-      count += dfs (r - 1 , c - 1 );
-      return count;
+    result.push_back(line.substr(start_loc, curr_loc-start_loc));
   }
+  return result;
+}
 
-
+//DEPTH FIRST SEARCH////////////////////////////////////////////////////////////
+int dfs(int r, int c, int rows, int columns, vector<vector<char>>grid)
+{
+    //return variable
+    int count = 0;
+    //to give the grid the 3 dimmensional torus shape
+    if(r > rows)
+    {
+        r = 0;
+    }
+    if(c > columns)
+    {
+        c = 0;
+    }
+    if(r < 0)
+    {
+        r = rows;
+    }
+    if(c < 0)
+    {
+        c = columns;
+    }
+    //to check for places the spider can't/shouldn't go - BASE CASE/////////////
+    if(grid[r][c] == 'S' || visited[r][c] == 1)
+    {
+        return 0;
+    }
+    if(grid[r][c] == 'F')
+    {
+        visited[r][c] = 1;
+        return 1;
+    }
+    //To Mark visited locations//////////////////
+    visited[r][c] = 1;
+    //recursive calls///////////////////////////
+    count += dfs(r, c + 1, rows, columns, grid);
+    count += dfs(r, c - 1, rows, columns, grid);
+    count += dfs(r + 1 , c, rows, columns, grid);
+    count += dfs(r + 1 , c + 1, rows, columns, grid);
+    count += dfs(r + 1 , c - 1, rows, columns, grid);
+    count += dfs(r - 1 , c, rows, columns, grid);
+    count += dfs(r - 1 , c + 1, rows, columns, grid);
+    count += dfs(r - 1 , c - 1, rows, columns, grid);
+    return count;
+}
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 int main()
 {
+    //timing info
     chrono::time_point<chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
+    //timer started
 
-    Spider spider = new Spider();
-
+    //variable declaration
     string line;
-    vector<vector> column;
     bool check = false;
+    int rows = -1;
+    int columns = 0;
+    string answer;
+    vector<vector<char>> grid;
+    int count = 0;
+    int counter = 0;
 
+    //get input from file
     while(getline(cin, line))
     {
-        count++;
         for(int i = 0; i < line.length(); i++)
         {
-            if(line[i] == " ")
+            if(line[i] == ' ')
             {
-                return true;
+                check = true;
             }
         }
+        //if location of spider given
         if(check)
         {
-            TOTALROW = line.length();
-            TOTALCOL = count;
-            vector<int> temp = split(line, " , \t");
-            spider.startSpider(temp);
-            for(int i = 1; i < 8; i++)
+            vector<string> temp = split(line, " , \t");
+            int r = stoi(temp[0])-1;
+            int c = stoi(temp[1])-1;
+            //call initial recursive function
+            count = dfs(r, c, rows, columns, grid);
+            //if a fly was found
+            if(count > 0)
             {
-                int row = spider.getRow();
-                int col = spider.getColumn();
-                if
-                spider.checkSurround();
+                answer = "Yes";
             }
-
-
+            else
+            {
+                answer = "No";
+            }
+            //give answer
+            cout << answer << endl;
+            count = 0;
+            memset(visited, 0, sizeof(visited));
         }
+        //if grid given
         else
         {
             vector<char> temp(line.begin(), line.end());
-            column.push_back(temp);
+            grid.push_back(temp);
+            rows++;
+            columns = line.length() - 1;
         }
     }
+    //more timing info
+    end = std::chrono::system_clock::now();
+    chrono::duration<double> elapsed_seconds = end-start;
+    time_t end_time = std::chrono::system_clock::to_time_t(end);
+    cout << "Time: " << elapsed_seconds.count() << " seconds" << endl << endl;
 
     return 0;
 }
