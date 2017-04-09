@@ -1,0 +1,9 @@
+To compile:
+    g++ -std=c++11 -o Fly main.cpp
+    ./Fly <Tests/#.in >Tests/#.out
+    ***Replacing # with a test file (1-7)
+
+This algorithm allows the spider to search the entirety of its available path
+for a fly and report its success or failure. This algorithm takes into account
+the shape of a real 3 dimensional donut (torus). It can search any size grid up 
+to 100 x 100.
