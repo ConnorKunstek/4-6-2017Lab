@@ -83,7 +83,7 @@ int dfs(int r, int c, int rows, int columns, vector<vector<char>>grid)
     if(grid[r][c] == 'F')
     {
         visited[r][c] = 1;
-        return 1;
+        count++;
     }
     //To Mark visited locations//////////////////
     visited[r][c] = 1;
@@ -139,14 +139,13 @@ int main()
             //if a fly was found
             if(count > 0)
             {
-                answer = "Yes";
+                cout << "Yes" << endl;
+                cout << "Flies found: " << count << endl;
             }
             else
             {
-                answer = "No";
+                cout << "No" << endl;
             }
-            //give answer
-            cout << answer << endl;
             count = 0;
             memset(visited, 0, sizeof(visited));
         }
